@@ -1,8 +1,111 @@
+<div align="center">
+
 # Nexiuma
 
-**Nexiuma** is a production-oriented quantitative research and systematic trading platform. It provides institutional-quality architecture for strategy research, historical backtesting, portfolio analytics, risk management, and performance reporting.
+### Quantitative Research & Systematic Trading Platform
+
+[![Python](https://img.shields.io/badge/Python-3.12%2B-blue?logo=python&logoColor=white)](https://www.python.org/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Tests](https://img.shields.io/badge/Tests-47%20Passing-brightgreen)](tests/)
+[![Streamlit](https://img.shields.io/badge/Dashboard-Streamlit-FF4B4B?logo=streamlit&logoColor=white)](dashboard/streamlit_app.py)
+[![Quant Research](https://img.shields.io/badge/Focus-Quant%20Research-8B5CF6)](research/)
+
+**Current Version:** `v1.0` &nbsp;·&nbsp; **Status:** Active Development
+
+</div>
+
+---
+
+**Nexiuma** is an open-source quantitative research platform for systematic trading strategy development, validation, and reporting. It combines institutional-style software architecture with a research-first workflow: backtest strategies, optimize parameters, compare outcomes across assets, and stress-test robustness using walk-forward and universe-level analysis.
+
+**Mission:** Build tools that help researchers and developers evaluate *whether* a strategy works—not just how high its backtest return looks.
+
+| Capability | Description |
+|------------|-------------|
+| **Backtesting** | Historical simulation with commission, slippage, and risk controls |
+| **Strategy comparison** | Side-by-side evaluation of multiple signals on one ticker |
+| **Parameter optimization** | Grid search over strategy parameters with HTML reports |
+| **Universe analysis** | Cross-asset optimization and walk-forward robustness scoring |
+| **Reporting & dashboard** | Jinja2 tearsheets, Plotly charts, and a Streamlit UI |
 
 > **Disclaimer:** For research and education only. Not investment advice.
+
+---
+
+## Screenshots
+
+> Place image files in [`docs/`](docs/). Links below resolve once assets are added.
+
+### Dashboard
+
+![Dashboard](docs/dashboard.png)
+
+### Strategy Optimization
+
+![Optimization](docs/optimization.png)
+
+### Walk-Forward Analysis
+
+![Walk Forward](docs/walkforward.png)
+
+### Universe Robustness Report
+
+![Universe](docs/universe.png)
+
+---
+
+## Why Nexiuma?
+
+Most trading projects focus on **maximizing historical returns**. A strategy that looks excellent on a full-sample backtest often fails when parameters are chosen on the same data used to evaluate performance—a form of **in-sample overfitting**.
+
+Nexiuma is designed around a different goal: **robustness and methodological rigor**.
+
+| Focus area | What Nexiuma provides |
+|------------|------------------------|
+| **Robustness** | Walk-forward and universe-level scoring, not single-number backtest hype |
+| **Out-of-sample validation** | Train windows for optimization; test windows that were never used for selection |
+| **Cross-asset testing** | Universe optimization and walk-forward-universe reports across mega-cap equities |
+| **Research methodology** | Reproducible CLI, typed Python modules, CSV/HTML artifacts, and 47 automated tests |
+
+**Why walk-forward testing matters:** Optimizing on 2020–2024 and reporting the best result uses information from the entire period—including future bars relative to each training decision. Walk-forward analysis mimics live deployment: parameters are selected on past data only, then evaluated on genuinely unseen periods. The gap between **train Sharpe** and **test Sharpe** is one of the most direct measures of whether a strategy is research-grade or curve-fit.
+
+---
+
+## Research Findings
+
+The following summarizes representative results from Nexiuma’s research workflows on U.S. large-cap equities (2020–2024), using the default moving-average crossover strategy and standard parameter grids (`10/30`, `10/50`, `20/50`, `20/100`, `50/200`).
+
+**Universe:** AAPL, AMZN, MSFT, META, NVDA, GOOGL
+
+**Key observations:**
+
+1. **Parameter selection** — The `10/50` SMA configuration was frequently selected during in-sample optimization across assets and windows, suggesting short fast periods paired with medium slow periods dominated the Sharpe-based objective on historical train segments.
+
+2. **Universe walk-forward robustness** — A full walk-forward-universe run (`moving_average`, 3-year train / 1-year test) produced a composite **robustness score of approximately 24/100** (grade: *Poor* on the platform’s 0–100 scale). This score weights out-of-sample Sharpe, train-to-test degradation, win rate, and parameter stability.
+
+3. **Train vs. test degradation** — In-sample (train) Sharpe ratios consistently exceeded out-of-sample (test) Sharpe across assets and windows, indicating **material performance decay** when parameters selected on past data were applied forward.
+
+4. **Implication** — Strong full-period or train-only optimization results did **not** translate into reliable cross-asset out-of-sample performance. These findings reinforce the platform’s design emphasis: **reporting and scoring robustness is as important as reporting return.**
+
+*Figures and HTML reports are generated under `reports/optimization/`, `reports/walkforward/`, and `reports/walkforward_universe/` after each run.*
+
+---
+
+## Key Features
+
+| Feature | Status |
+|---------|--------|
+| Backtesting | ✅ |
+| Strategy Comparison | ✅ |
+| Parameter Optimization | ✅ |
+| Universe Optimization | ✅ |
+| Walk-Forward Testing | ✅ |
+| Walk-Forward Universe Analysis | ✅ |
+| Streamlit Dashboard | ✅ |
+| Benchmark Comparison | 🚧 |
+| Portfolio Engine | 🚧 |
+| Paper Trading | 🚧 |
+| Machine Learning Models | 🚧 |
 
 ---
 
@@ -92,6 +195,18 @@ streamlit run dashboard/streamlit_app.py
 ---
 
 ## Architecture
+
+Nexiuma follows a layered architecture that separates data ingestion, execution simulation, strategy logic, analytics, and presentation.
+
+### Design Principles
+
+| Principle | Implementation |
+|-----------|----------------|
+| **Separation of concerns** | `data/`, `core/`, `strategies/`, `analytics/`, `research/`, `reports/` |
+| **Protocol-driven architecture** | `core/interfaces.py` defines broker, execution, and signal contracts |
+| **Extensibility** | Strategy registry, pluggable settings, CLI subcommands |
+| **Reproducibility** | Cached OHLCV, versioned configs, CSV/HTML run artifacts |
+| **Research-first design** | Optimization and walk-forward modules prioritize OOS validation over headline returns |
 
 ```mermaid
 flowchart TB
@@ -192,9 +307,6 @@ flowchart LR
 | `interactive_charts.html` | Plotly parameter history & comparisons |
 | `summary.html` | Professional HTML report with conclusions |
 
-<!-- Screenshot placeholder: walk-forward summary report -->
-<!-- Screenshot placeholder: walk-forward equity curve -->
-
 ### Walk-Forward Universe Analysis
 
 Extends single-asset walk-forward to an entire basket, producing a **cross-asset robustness report** with a composite 0–100 score.
@@ -211,6 +323,7 @@ flowchart TB
 ```
 
 **Workflow:**
+
 1. For each asset, run full walk-forward (optimize train → test OOS)
 2. Flatten all asset-window results into universe tables
 3. Compute aggregate metrics, parameter frequency, best/worst assets
@@ -241,9 +354,6 @@ Components: Test Sharpe (30 pts) · Low degradation (25 pts) · Win rate (25 pts
 | `robustness_chart.html` | Interactive Plotly dashboard |
 | `index.html` | Full HTML research report |
 
-<!-- Screenshot placeholder: walk-forward universe robustness dashboard -->
-<!-- Screenshot placeholder: walk-forward universe heatmap -->
-
 ---
 
 ## Folder Structure
@@ -262,6 +372,7 @@ Components: Test Sharpe (30 pts) · Low degradation (25 pts) · Win rate (25 pts
 | `tests/` | pytest unit & integration tests |
 | `notebooks/` | Research notebooks |
 | `logs/` | Rotating loguru file logs |
+| `docs/` | README screenshots and documentation assets |
 
 ---
 
@@ -335,25 +446,74 @@ pytest
 pytest tests/test_strategy_signals.py -v
 ```
 
+The test suite includes **47 passing tests** covering metrics, strategies, optimization, walk-forward analysis, and universe robustness workflows.
+
+---
+
+## Lessons Learned
+
+Building Nexiuma surfaced several lessons that apply beyond this codebase:
+
+1. **Optimization can be misleading** — The parameter set with the highest in-sample Sharpe is not necessarily the best strategy; it is often the best fit to noise in the training window.
+
+2. **Walk-forward testing exposes overfitting** — Separating train and test periods consistently revealed large gaps between train and out-of-sample Sharpe—gaps that full-sample backtests concealed.
+
+3. **Cross-asset testing is critical** — A configuration that appears robust on one ticker may underperform on others; universe-level walk-forward scoring helps surface that heterogeneity.
+
+4. **Robustness matters more than raw returns** — For research and production readiness, a moderate return with stable out-of-sample behavior is more informative than a spectacular backtest that fails forward validation.
+
+These principles shaped Nexiuma’s CLI design, reporting outputs, and the emphasis on walk-forward-universe scoring in **v1.0**.
+
 ---
 
 ## Roadmap
 
-### v2 — Paper Trading & Multi-Asset
-- Alpaca paper trading (`core/broker` live adapter)
-- Multi-ticker portfolio backtests
-- Walk-forward optimization
-- TimescaleDB tick storage
+### v1.0 (Completed)
 
-### v3 — ML & Institutional
-- Feature store + ML signal models
+- Market data pipeline (yfinance, cache, validation)
+- Protocol-driven backtest engine (backtrader)
+- Moving-average, RSI, and momentum strategies
+- Strategy comparison (`compare`, `compare-universe`)
+- Parameter optimization (`optimize`, `optimize-universe`)
+- Walk-forward testing (`walkforward`)
+- Walk-forward universe analysis with robustness score (`walkforward-universe`)
+- HTML/CSV/Plotly reporting
+- Streamlit dashboard (backtest, walk-forward, walk-forward universe)
+- 47 automated unit tests
+
+### v2.0
+
+- Benchmark comparison
+- Portfolio backtesting
+- Portfolio optimization
+- Portfolio walk-forward testing
+
+### v3.0
+
+- Alpaca integration
 - Interactive Brokers integration
-- Factor models & portfolio optimization
-- News sentiment pipeline
-- Crypto & multi-asset support
+- Paper trading
+- Multi-asset portfolio support
+
+### v4.0
+
+- Feature engineering pipeline
+- Machine learning signal models
+- Sentiment analysis
+- Factor models
+
+---
+
+## Author
+
+**Henry Lin**
+
+Built as an independent quantitative research project exploring systematic trading, strategy validation, and financial data analysis.
+
+Questions, feedback, and contributions are welcome via GitHub issues and pull requests.
 
 ---
 
 ## License
 
-MIT
+This project is licensed under the **MIT License**. See [LICENSE](LICENSE) for details.
