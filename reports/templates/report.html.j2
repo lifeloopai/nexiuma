@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexiuma Report — {{ strategy }} / {{ ticker }}</title>
+  <style>
+    :root { --primary: #0f172a; --accent: #3b82f6; --muted: #64748b; --bg: #f1f5f9; }
+    * { box-sizing: border-box; }
+    body { font-family: Inter, system-ui, sans-serif; margin: 0; background: var(--bg); color: #1e293b; line-height: 1.5; }
+    .header { background: linear-gradient(135deg, #0f172a, #1e3a5f); color: white; padding: 2.5rem 2rem; }
+    .header h1 { margin: 0 0 0.25rem; font-weight: 700; }
+    .header .meta { opacity: 0.85; font-size: 0.95rem; }
+    .container { max-width: 1140px; margin: 0 auto; padding: 2rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; }
+    .card { background: white; border-radius: 10px; padding: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+    .card h3 { margin: 0 0 0.35rem; font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+    .card .value { font-size: 1.4rem; font-weight: 700; color: var(--primary); }
+    .section { margin: 2.5rem 0; }
+    .section h2 { font-size: 1.15rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--accent); }
+    img { max-width: 100%; border-radius: 8px; margin: 0.75rem 0; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    table { width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden; }
+    th, td { padding: 0.85rem 1rem; text-align: left; border-bottom: 1px solid #e2e8f0; }
+    th { background: #f8fafc; font-weight: 600; font-size: 0.85rem; }
+    .benchmark { background: #eff6ff; border-left: 4px solid var(--accent); padding: 1rem 1.25rem; border-radius: 0 8px 8px 0; margin: 1rem 0; }
+    .footer { text-align: center; color: var(--muted); padding: 2rem; font-size: 0.8rem; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Nexiuma Backtest Report</h1>
+    <p class="meta">{{ strategy }} · {{ ticker }} · {{ start_date }} → {{ end_date }}</p>
+    {% if strategy_params %}
+    <p class="meta">Parameters: {{ strategy_params }}</p>
+    {% endif %}
+    <p class="meta">Generated {{ generated_at }}</p>
+  </div>
+  <div class="container">
+    <div class="section">
+      <h2>Performance</h2>
+      <div class="grid">
+        {% for label, value in performance_cards %}
+        <div class="card"><h3>{{ label }}</h3><div class="value">{{ value }}</div></div>
+        {% endfor %}
+      </div>
+    </div>
+    {% if benchmark_return != "N/A" %}
+    <div class="benchmark">
+      <strong>Benchmark (buy & hold):</strong> {{ benchmark_return }}
+      &nbsp;|&nbsp; <strong>Alpha:</strong> {{ alpha }}
+    </div>
+    {% endif %}
+    <div class="section">
+      <h2>Risk Analysis</h2>
+      <table>
+        <tr><th>Metric</th><th>Value</th></tr>
+        {% for k, v in risk_rows %}
+        <tr><td>{{ k }}</td><td>{{ v }}</td></tr>
+        {% endfor %}
+      </table>
+    </div>
+    <div class="section">
+      <h2>Charts</h2>
+      {% for chart in charts %}
+      <h3>{{ chart.title }}</h3>
+      <img src="{{ chart.path }}" alt="{{ chart.title }}">
+      {% endfor %}
+    </div>
+  </div>
+  <div class="footer">Nexiuma Quantitative Research Platform · Not investment advice</div>
+</body>
+</html>

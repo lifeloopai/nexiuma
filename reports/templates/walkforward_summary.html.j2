@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title }}</title>
+  <style>
+    :root { --primary: #0f172a; --accent: #3b82f6; --muted: #64748b; --bg: #f1f5f9; }
+    body { font-family: Inter, system-ui, sans-serif; margin: 0; background: var(--bg); color: #1e293b; line-height: 1.55; }
+    .header { background: linear-gradient(135deg, #0f172a, #1e3a5f); color: white; padding: 2rem; }
+    .container { max-width: 1140px; margin: 0 auto; padding: 2rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+    .card { background: white; border-radius: 10px; padding: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+    .card h3 { margin: 0; font-size: 0.7rem; color: var(--muted); text-transform: uppercase; }
+    .card .value { font-size: 1.2rem; font-weight: 700; }
+    .section { margin: 2rem 0; }
+    .section h2 { border-bottom: 2px solid var(--accent); padding-bottom: 0.5rem; }
+    .window { background: white; border-radius: 10px; padding: 1rem 1.25rem; margin: 1rem 0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .window h3 { margin: 0 0 0.5rem; color: var(--primary); }
+    .conclusion { background: #eff6ff; border-left: 4px solid var(--accent); padding: 1rem 1.25rem; border-radius: 0 8px 8px 0; }
+    img { max-width: 100%; border-radius: 8px; margin: 0.75rem 0; }
+    iframe { width: 100%; height: 800px; border: none; border-radius: 10px; background: white; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>{{ title }}</h1>
+    <p>{{ subtitle }}</p>
+    <p>Generated {{ generated_at }} · {{ num_windows }} windows</p>
+  </div>
+  <div class="container">
+    <div class="grid">
+      <div class="card"><h3>Avg Test Sharpe</h3><div class="value">{{ avg_test_sharpe }}</div></div>
+      <div class="card"><h3>Avg Test Return</h3><div class="value">{{ avg_test_return }}</div></div>
+      <div class="card"><h3>Worst Drawdown</h3><div class="value">{{ worst_drawdown }}</div></div>
+      <div class="card"><h3>Param Stability</h3><div class="value">{{ param_stability }}</div></div>
+      <div class="card"><h3>Profitable Windows</h3><div class="value">{{ profitable_pct }}</div></div>
+      <div class="card"><h3>Avg Train Sharpe</h3><div class="value">{{ avg_train_sharpe }}</div></div>
+    </div>
+
+    <div class="section">
+      <h2>Window Details</h2>
+      {% for w in window_sections %}
+      <div class="window">
+        <h3>{{ w.title }}</h3>
+        <p><strong>Train:</strong> {{ w.train }} · <strong>Best Params:</strong> {{ w.params }} · <strong>Train Sharpe:</strong> {{ w.train_sharpe }}</p>
+        <p><strong>Test:</strong> {{ w.test }} · <strong>Test Sharpe:</strong> {{ w.test_sharpe }} · <strong>Return:</strong> {{ w.test_return }} · <strong>Max DD:</strong> {{ w.test_drawdown }}</p>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="section">
+      <h2>Out-of-Sample Equity</h2>
+      <img src="{{ equity_chart }}" alt="Equity curve">
+    </div>
+
+    <div class="section">
+      <h2>Train vs Test Performance</h2>
+      <img src="{{ performance_chart }}" alt="Performance comparison">
+    </div>
+
+    <div class="section">
+      <h2>Interactive Charts</h2>
+      <iframe src="{{ interactive_chart }}" title="Interactive walk-forward charts"></iframe>
+    </div>
+
+    <div class="section conclusion">
+      <h2>Conclusions</h2>
+      <p>{{ conclusion }}</p>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title }}</title>
+  <style>
+    :root { --primary: #0f172a; --accent: #3b82f6; --muted: #64748b; --bg: #f1f5f9; }
+    body { font-family: Inter, system-ui, sans-serif; margin: 0; background: var(--bg); color: #1e293b; }
+    .header { background: linear-gradient(135deg, #0f172a, #1e3a5f); color: white; padding: 2rem; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+    .card { background: white; border-radius: 10px; padding: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+    .card h3 { margin: 0; font-size: 0.7rem; color: var(--muted); text-transform: uppercase; }
+    .card .value { font-size: 1.25rem; font-weight: 700; }
+    table { width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden; margin: 1.5rem 0; }
+    th, td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid #e2e8f0; }
+    th { background: #f8fafc; font-size: 0.85rem; }
+    iframe { width: 100%; height: 760px; border: none; border-radius: 10px; background: white; }
+    .section h2 { border-bottom: 2px solid var(--accent); padding-bottom: 0.5rem; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>{{ title }}</h1>
+    <p>{{ subtitle }} · Generated {{ generated_at }}</p>
+  </div>
+  <div class="container">
+    <div class="grid">
+      {% for label, value in summary_cards %}
+      <div class="card"><h3>{{ label }}</h3><div class="value">{{ value }}</div></div>
+      {% endfor %}
+    </div>
+    <div class="section">
+      <h2>Metrics</h2>
+      <table>
+        <tr><th>Name</th>{% for col in columns %}<th>{{ col }}</th>{% endfor %}</tr>
+        {% for row in rows %}
+        <tr><td>{{ row[0] }}</td>{% for cell in row[1:] %}<td>{{ cell }}</td>{% endfor %}</tr>
+        {% endfor %}
+      </table>
+    </div>
+    <div class="section">
+      <h2>Interactive Chart</h2>
+      <iframe src="{{ chart_path }}" title="Strategy comparison chart"></iframe>
+    </div>
+  </div>
+</body>
+</html>

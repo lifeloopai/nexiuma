@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tearsheet — {{ strategy }} / {{ ticker }}</title>
+  <style>
+    body { font-family: system-ui; max-width: 800px; margin: 2rem auto; padding: 0 1rem; }
+    h1 { color: #0f172a; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    td, th { padding: 0.5rem; border-bottom: 1px solid #e2e8f0; text-align: left; }
+    th { color: #64748b; font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+  <h1>{{ strategy }} — {{ ticker }}</h1>
+  <p>{{ start_date }} to {{ end_date }}</p>
+  <table>
+    {% for k, v in metrics.items() %}
+    <tr><th>{{ k }}</th><td>{{ v }}</td></tr>
+    {% endfor %}
+    <tr><th>Benchmark</th><td>{{ benchmark }}</td></tr>
+    <tr><th>Alpha</th><td>{{ alpha }}</td></tr>
+  </table>
+</body>
+</html>

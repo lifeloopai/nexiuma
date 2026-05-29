@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title }}</title>
+  <style>
+    :root { --primary: #0f172a; --accent: #3b82f6; --muted: #64748b; --bg: #f1f5f9; }
+    body { font-family: Inter, system-ui, sans-serif; margin: 0; background: var(--bg); color: #1e293b; line-height: 1.55; }
+    .header { background: linear-gradient(135deg, #0f172a, #1e3a5f); color: white; padding: 2rem; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    .executive { background: #eff6ff; border-left: 4px solid var(--accent); padding: 1.25rem; border-radius: 0 8px 8px 0; margin: 1.5rem 0; }
+    .score { font-size: 2.5rem; font-weight: 800; color: var(--accent); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+    .card { background: white; border-radius: 10px; padding: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+    .card h3 { margin: 0; font-size: 0.7rem; color: var(--muted); text-transform: uppercase; }
+    .card .value { font-size: 1.15rem; font-weight: 700; }
+    .section { margin: 2rem 0; }
+    .section h2 { border-bottom: 2px solid var(--accent); padding-bottom: 0.5rem; }
+    table { width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden; margin: 1rem 0; font-size: 0.88rem; }
+    th, td { padding: 0.65rem 0.85rem; text-align: left; border-bottom: 1px solid #e2e8f0; }
+    th { background: #f8fafc; }
+    ul { padding-left: 1.25rem; }
+    iframe { width: 100%; height: 520px; border: none; border-radius: 10px; background: white; margin: 0.75rem 0; }
+    .conclusion { background: white; padding: 1.25rem; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>{{ title }}</h1>
+    <p>{{ subtitle }} · Generated {{ generated_at }}</p>
+  </div>
+  <div class="container">
+    <div class="executive">
+      <h2>Executive Summary</h2>
+      <p>{{ executive_summary }}</p>
+    </div>
+
+    <div class="section">
+      <h2>Robustness Score</h2>
+      <div class="score">{{ robustness_score }}/100 — {{ robustness_grade }}</div>
+      <table>
+        <tr><th>Component</th><th>Points</th></tr>
+        {% for label, pts in score_breakdown %}
+        <tr><td>{{ label }}</td><td>{{ pts }}</td></tr>
+        {% endfor %}
+      </table>
+    </div>
+
+    <div class="section">
+      <h2>Key Findings</h2>
+      <ul>{% for f in key_findings %}<li>{{ f }}</li>{% endfor %}</ul>
+    </div>
+
+    <div class="section">
+      <h2>Universe Statistics</h2>
+      <div class="grid">
+        {% for label, value in stats %}
+        <div class="card"><h3>{{ label }}</h3><div class="value">{{ value }}</div></div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Asset-by-Asset Breakdown</h2>
+      <table>
+        <tr>{% for h in asset_headers %}<th>{{ h }}</th>{% endfor %}</tr>
+        {% for row in asset_rows %}
+        <tr>{% for cell in row %}<td>{{ cell }}</td>{% endfor %}</tr>
+        {% endfor %}
+      </table>
+    </div>
+
+    <div class="section">
+      <h2>Parameter Selection History</h2>
+      <table>
+        <tr>{% for h in param_headers %}<th>{{ h }}</th>{% endfor %}</tr>
+        {% for row in param_rows %}
+        <tr>{% for cell in row %}<td>{{ cell }}</td>{% endfor %}</tr>
+        {% endfor %}
+      </table>
+      <h3>All Windows</h3>
+      <table>
+        <tr>{% for h in window_headers %}<th>{{ h }}</th>{% endfor %}</tr>
+        {% for row in window_rows %}
+        <tr>{% for cell in row %}<td>{{ cell }}</td>{% endfor %}</tr>
+        {% endfor %}
+      </table>
+    </div>
+
+    <div class="section">
+      <h2>Visualizations</h2>
+      <h3>OOS Sharpe Heatmap</h3>
+      <iframe src="{{ sharpe_heatmap }}" title="Sharpe heatmap"></iframe>
+      <h3>Sharpe Degradation Heatmap</h3>
+      <iframe src="{{ degradation_heatmap }}" title="Degradation heatmap"></iframe>
+      <h3>Robustness Dashboard</h3>
+      <iframe src="{{ robustness_chart }}" title="Robustness dashboard" style="height:900px"></iframe>
+    </div>
+
+    <div class="section conclusion">
+      <h2>Research Conclusions</h2>
+      <p>{{ conclusions }}</p>
+    </div>
+  </div>
+</body>
+</html>
